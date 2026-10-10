@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Código de la Vida | UdeSA 2026</title>
+    <!-- Carga de la librería oficial de gráficos Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: #0b0f19;
+            color: #e2e8f0;
+            margin: 0;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        h1 {
+            color: #2dd4bf; /* Verde agua / Menta bio-médico */
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+        p.subtitle {
+            font-size: 1.1rem;
+            color: #94a3b8;
+            max-width: 680px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        .chart-card {
+            background-color: #131c2e;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            border: 1px solid #1e293b;
+            margin-bottom: 30px;
+        }
+        .chart-header {
+            margin-bottom: 20px;
+        }
+        .chart-title {
+            font-size: 1.3rem;
+            color: #f8fafc;
+            margin: 0 0 8px 0;
+        }
+        .chart-desc {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin: 0;
+        }
+        /* Bloques de narrativa */
+        .story-block {
+            background-color: #131c2e;
+            border-left: 4px solid #2dd4bf;
+            padding: 20px 24px;
+            border-radius: 0 8px 8px 0;
+            margin: 35px 0;
+            color: #cbd5e1;
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+        .story-block strong {
+            color: #f8fafc;
+        }
+        .favaloro-card {
+            background-color: #0f172a;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 30px 0;
+            line-height: 1.7;
+        }
+        .favaloro-card h3 {
+            color: #2dd4bf;
+            margin-top: 0;
+        }
+        /* Comparador Interactivo */
+        .interactive-box {
+            background: linear-gradient(135deg, #131c2e 0%, #0f172a 100%);
+            border: 1px solid #2dd4bf;
+            border-radius: 12px;
+            padding: 28px;
+            margin: 40px 0;
+            box-shadow: 0 0 20px rgba(45, 212, 191, 0.15);
+        }
+        .interactive-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .interactive-header h3 {
+            color: #2dd4bf;
+            margin: 0 0 8px 0;
+            font-size: 1.4rem;
+        }
+        .year-select {
+            background-color: #0b0f19;
+            color: #2dd4bf;
+            border: 1px solid #2dd4bf;
+            padding: 10px 20px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            outline: none;
+            font-weight: bold;
+        }
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
+        }
+        .comp-card {
+            background-color: #0b0f19;
+            padding: 18px;
+            border-radius: 8px;
+            border: 1px solid #1e293b;
+            text-align: center;
+        }
+        .comp-card label {
+            display: block;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        .comp-card span {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #f8fafc;
+        }
+
+        /* Conclusión Final */
+        .conclusion-card {
+            background-color: #131c2e;
+            border-top: 4px solid #2dd4bf;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 50px 0 30px 0;
+            line-height: 1.8;
+        }
+        .conclusion-card h3 {
+            color: #2dd4bf;
+            margin-top: 0;
+            font-size: 1.5rem;
+        }
+        /* Animaciones suaves al hacer Scroll (Scrollytelling) */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            filter: blur(8px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out, filter 0.8s ease-out;
+            will-change: opacity, transform, filter;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
+        }
+        /* Pantalla de Bienvenida / Intro Screen */
+        #intro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: #0b0f19;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: opacity 0.8s ease, filter 0.8s ease, visibility 0.8s;
+        }
+
+        #intro-overlay.hidden {
+            opacity: 0;
+            filter: blur(12px);
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .dna-icon {
+            font-size: 3.5rem;
+            color: #2dd4bf;
+            margin-bottom: 20px;
+            animation: pulse 2.5s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; filter: drop-shadow(0 0 15px rgba(45, 212, 191, 0.6)); }
+        }
+
+        .intro-title {
+            font-size: 3rem;
+            color: #f8fafc;
+            margin: 0 0 15px 0;
+            letter-spacing: -1px;
+        }
+
+        .intro-title span {
+            color: #2dd4bf;
+        }
+
+        .intro-subtitle {
+            font-size: 1.15rem;
+            color: #94a3b8;
+            max-width: 600px;
+            margin: 0 0 35px 0;
+            line-height: 1.6;
+        }
+
+        .btn-enter {
+            background: linear-gradient(135deg, #2dd4bf 0%, #0d9488 100%);
+            color: #0b0f19;
+            font-weight: bold;
+            font-size: 1.1rem;
+            padding: 16px 36px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(45, 212, 191, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .btn-enter:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 0 30px rgba(45, 212, 191, 0.7);
+        }
+        /* 1. Barra de Progreso de Lectura */
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #2dd4bf, #14b8a6);
+            width: 0%;
+            z-index: 10000;
+            transition: width 0.1s ease-out;
+            box-shadow: 0 0 10px rgba(45, 212, 191, 0.7);
+        }
+
+        /* 3. Tarjetas de Métricas Clave (Highlights) */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin: 35px 0;
+        }
+        .metric-card {
+            background-color: #131c2e;
+            border: 1px solid #1e293b;
+            border-top: 3px solid #2dd4bf;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+        .metric-number {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #2dd4bf;
+            margin-bottom: 5px;
+            letter-spacing: -1px;
+        }
+        .metric-label {
+            font-size: 0.88rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* 4. Modal / Panel de Modo Resumen Executivo */
+        .summary-btn-container {
+            text-align: center;
+            margin: 20px 0 40px 0;
+        }
+        .btn-summary {
+            background-color: transparent;
+            color: #2dd4bf;
+            border: 1px solid #2dd4bf;
+            padding: 10px 22px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-summary:hover {
+            background-color: rgba(45, 212, 191, 0.1);
+            box-shadow: 0 0 15px rgba(45, 212, 191, 0.3);
+        }
+        #summary-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(11, 15, 25, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 10001;
+            justify-content: center;
+            align-items: center;
+        }
+        .summary-content {
+            background-color: #131c2e;
+            border: 1px solid #2dd4bf;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            position: relative;
+        }
+        .close-summary {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: #94a3b8;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        .close-summary:hover { color: #2dd4bf; }
+
+        /* 2. Footer de Citación Académica */
+        .academic-footer {
+            background-color: #080c14;
+            border-top: 1px solid #1e293b;
+            padding: 40px 20px;
+            margin-top: 80px;
+            font-size: 0.9rem;
+            color: #64748b;
+            line-height: 1.7;
+            
+        }
+        .academic-footer h4 {
+            color: #94a3b8;
+            margin-top: 0;
+            font-size: 0.95rem;
+        }
+        .citation-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .citation-list li {
+            margin-bottom: 8px;
+            padding-left: 15px;
+            text-indent: -15px;
+        }
+        /* --- ADAPTABILIDAD RESPONSIVA (MÓVILES Y TABLETS) --- */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            .intro-title {
+                font-size: 2.1rem;
+            }
+            .intro-subtitle {
+                font-size: 1rem;
+            }
+            .chart-card {
+                padding: 15px;
+            }
+            .chart-header h2 {
+                font-size: 1.2rem;
+            }
+            .metrics-grid, .comparison-grid {
+                grid-template-columns: 1fr; /* Pasa a 1 sola columna vertical en celulares */
+            }
+            .metric-number {
+                font-size: 1.8rem;
+            }
+            .btn-enter, .btn-summary {
+                width: 100%; /* Botón touch de ancho completo para facilitar la pulsación digital */
+                box-sizing: border-box;
+            }
+        }
+        /* --- GLOSARIO FLOTANTE (TOOLTIPS) --- */
+        .term-glossary {
+            color: #2dd4bf;
+            border-bottom: 1px dashed #2dd4bf;
+            cursor: help;
+            position: relative;
+            display: inline-block;
+            font-weight: 600;
+        }
+
+        .term-glossary .tooltip-text {
+            visibility: hidden;
+            width: 240px;
+            background-color: #131c2e;
+            color: #f8fafc;
+            text-align: left;
+            border: 1px solid #2dd4bf;
+            border-radius: 8px;
+            padding: 10px 14px;
+            position: absolute;
+            z-index: 100;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            font-size: 0.82rem;
+            font-weight: normal;
+            line-height: 1.4;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+            pointer-events: none;
+        }
+
+        .term-glossary:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+            transform: translateX(-50%) translateY(-5px);
+        }
+
+        /* Ajuste responsive para los tooltips en móviles */
+        @media (max-width: 600px) {
+            .term-glossary .tooltip-text {
+                width: 190px;
+                left: 20%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 1. Barra de Progreso de Lectura -->
+    <div id="progress-bar"></div>
+    <!-- Pantalla de Inicio / Carátula -->
+    <div id="intro-overlay">
+        <div class="dna-icon">🧬</div>
+        <h1 class="intro-title">El Código de la <span>Vida</span></h1>
+        <p class="intro-subtitle">
+            De la reparación quirúrgica a la reprogramación celular: un viaje interactivo a través de la aceleración genómica que reconfigura el futuro de la medicina.
+        </p>
+        <button class="btn-enter" onclick="ingresar() ">Iniciar Exploración Interactiva</button>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>El Código de la Vida</h1>
+            <p class="subtitle">
+                De reparar el cuerpo a reprogramar la biología: el desplome del costo de lectura del ADN y la aceleración del potencial evolutivo humano.
+            </p>
+        </header>
+            
+        <!-- Ancla Histórica: El Triunvirato Científico Argentino -->
+        <div class="favaloro-card reveal">
+            <h3>Hito de Cambio de Paradigma: Del Legado Médico Argentino a la Medicina Programable</h3>
+            <p>
+                Durante el siglo XX, la República Argentina consolidó una tradición de excelencia científica de proyección global. Figuras fundamentales como <strong>Bernardo Houssay</strong> (Premio Nobel 1947, por sus descubrimientos sobre el rol del lóbulo anterior de la hipófisis en el metabolismo de los azúcares) y <strong>César Milstein</strong> (Premio Nobel 1984, por el desarrollo de la técnica de anticuerpos monoclonales que sentó las bases de la inmunoterapia moderna) marcaron hitos de alcance universal. A este legado de vanguardia se sumó la visión del <strong>Dr. René Favaloro</strong>, cuyo desarrollo del <em>bypass aortocoronario</em> revolucionó la cardiología al reparar mecánicamente las arterias dañadas.
+            </p>
+            <p>
+                Gracias a ellos, y al trabajo silencioso de tantos otros científicos, médicos e investigadores argentinos que han aportado enormemente a la medicina nacional y global, el siglo XX se convirtió en la cúspide de la <strong>reparación física y la comprensión fisiológica del cuerpo</strong>.
+            </p>
+            <p>
+                Hoy, en el siglo XXI, estamos presenciando una transición histórica decisiva: sobre los cimientos de esa tradición médica, pasamos de reparar la estructura física y tratar los síntomas a <strong>reprogramar la información genética</strong> que construye la biología humana.
+            </p>
+        </div>
+
+        <div class="story-block reveal">
+            <strong>Capítulo 1: La Caída del Muro Genómico.</strong> Para poder reprogramar la biología, primero debíamos ser capaces de leerla. El Proyecto Genoma Humano tardó más de una década y costó cerca de 100 millones de dólares para descifrar un solo genoma. Hoy, ese mismo proceso toma pocas horas y cuesta apenas $100 USD.
+        </div>
+
+        <!-- Tarjeta contenedora del gráfico 1 -->
+        <div class="chart-card reveal">
+            <div class="chart-header">
+                <h2 class="chart-title">1. El Colapso del Costo de Secuenciación Genómica (USD)</h2>
+                <p class="chart-desc">Evolución histórica del costo por genoma humano completo (2001 - 2026). Fuente: NHGRI / NIH.</p>
+            </div>
+            <!-- El canvas donde Chart.js dibuja -->
+            <canvas id="graficoGenoma" height="120"></canvas>
+        </div>
+
+        <!-- Comparador Interactivo 2001 vs 2026 -->
+
+        <div class="interactive-box reveal">
+
+            <div class="interactive-header">
+
+                <h3>Simulador de Impacto Temporal: ¿Cómo cambió la Genómica?</h3>
+
+                <p style="color: #94a3b8; font-size: 0.95rem;">Seleccioná un año para comparar la capacidad diagnóstica y biotecnológica:</p>
+
+                <select id="selectAnno" class="year-select" onchange="actualizarComparador()">
+
+                    <option value="2001">Año 2001 (Proyecto Genoma Humano)</option>
+
+                    <option value="2006">Año 2006 (Inicio de la Era NGS)</option>
+
+                    <option value="2012">Año 2012 (Nacimiento de CRISPR)</option>
+
+                    <option value="2016">Año 2016 (Umbral del Genoma a $1.000 USD)</option>
+
+                    <option value="2026" selected>Año 2026 (Era de Reprogramación)</option>
+
+                </select>
+
+            </div>
+
+            <div class="comparison-grid">
+                <div class="comp-card">
+                    <label>Costo del Genoma</label>
+                    <span id="compCosto">USD $100</span>
+                </div>
+                <div class="comp-card">
+                    <label>Tiempo de Lectura</label>
+                    <span id="compTiempo">Pocas Horas</span>
+                </div>
+                <div class="comp-card">
+                    <label>Capacidad Quirúrgica</label>
+                    <span id="compCapacidad">Edición / Reversión</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="story-block reveal">
+            <strong>Capítulo 2: De Leer a Escribir el Código.</strong> Una vez democratizada la lectura del ADN, la invención de herramientas como CRISPR-Cas9 permitió empezar a editar el genoma con precisión quirúrgica a nivel molecular. Lo que en 2012 era solo un descubrimiento de laboratorio, hoy cuenta con cientos de ensayos clínicos activos en humanos.
+        </div>
+
+        <!-- Tarjeta contenedora del gráfico 2 (CRISPR) -->
+        <div class="chart-card reveal">
+            <div class="chart-header">
+                <h2 class="chart-title">2. Explosión de la Edición Génica (Ensayos Clínicos Activos)</h2>
+                <p class="chart-desc">Evolución del número de ensayos clínicos globales utilizando CRISPR y tecnologías de edición génica (2012 - 2026). Fuente: ClinicalTrials.gov.</p>
+            </div>
+            <canvas id="graficoCrispr" height="120"></canvas>
+        </div>
+        <!-- Módulo: Patologías Tratadas con CRISPR -->
+        <div class="chart-card reveal">
+            <div class="chart-header">
+                <h2>Áreas Clínicas Target: ¿Qué enfermedades se editan hoy?</h2>
+                <p class="chart-desc">Distribución porcentual de ensayos clínicos activos categorizados por tipo de afección (Fuente: ClinicalTrials.gov):</p>
+            </div>
+            <div style="max-width: 420px; margin: 0 auto;">
+                <canvas id="crisprDiseasesChart"></canvas>
+            </div>
+        </div>
+        <div class="story-block reveal">
+            <strong>Capítulo 3: Trascendiendo la Longevidad Natural.</strong> El objetivo ya no es únicamente curar patologías hereditarias, sino enlentecer y revertir el deterioro biológico. A través de la reprogramación celular episomal (utilizando factores de transcripción para 'reiniciar' la edad de las células), la inversión global en biotecnología de longevidad ha experimentado un salto exponencial en la última década.
+        </div>
+
+        <!-- Tarjeta contenedora del gráfico 3 -->
+        <div class="chart-card reveal">
+            <div class="chart-header">
+                <h2 class="chart-title">3. Inversión Global en Reprogramación Celular y Longevidad (Millones USD)</h2>
+                <p class="chart-desc">Financiamiento privado y público en biotecnologías dirigidas a la reversión del envejecimiento (2016 - 2026). Fuente: Nature Biotech / Industry Reports.</p>
+            </div>
+            <canvas id="graficoLongevidad" height="120"></canvas>
+        </div>
+        
+        <!-- Módulo: Cobertura y Disparidad Genómica Global -->
+<div class="interactive-box reveal" id="modulo-mapa-global">
+    <div class="interactive-header">
+        <h3>🌍 Geopolítica del ADN: Acceso a la Medicina Genómica por Región</h3>
+        <p style="color: #94a3b8; font-size: 0.95rem;">Seleccioná una región para analizar la concentración de biobancos y la penetración diagnóstica:</p>
+        <select id="selectRegion" class="year-select" onchange="actualizarRegionGlobal()">
+            <option value="latam" selected>América Latina & Caribe</option>
+            <option value="namerica">América del Norte (EE.UU. / Canadá)</option>
+            <option value="europe">Europa Occidental</option>
+            <option value="asia">Asia-Pacífico</option>
+            <option value="africa">África Subsahariana y Norte</option>
+            <option value="oceania">Oceanía (Australia / Nueva Zelanda)</option>
+        </select>
+    </div>
+
+    <div class="comparison-grid">
+        <div class="comp-card">
+            <label>Concentración de Biobancos</label>
+            <span id="regBiobancos">7% del Total Global</span>
+        </div>
+        <div class="comp-card">
+            <label>Costo Medio de Acceso</label>
+            <span id="regCosto">Subvencionado / Mixto</span>
+        </div>
+        <div class="comp-card">
+            <label>Estatus y Desafío Clave</label>
+            <span id="regDesafio" style="font-size: 1.1rem; color: #38bdf8;">Hub Emergente / Brecha de Datos</span>
+        </div>
+    </div>
+</div>
+
+        <!-- 1. Tarjetas de Métricas Clave -->
+        <div class="metrics-grid reveal">
+            <div class="metric-card">
+                <div class="metric-number">-99.99%</div>
+                <div class="metric-label">Caída del Costo Genómico</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-number">750+</div>
+                <div class="metric-label">Ensayos Clínicos CRISPR</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-number">$12.5B</div>
+                <div class="metric-label">Inversión en Longevidad</div>
+            </div>
+        </div>
+
+        <!-- Conclusión Teórica y Bioética -->
+        <div class="conclusion-card reveal">
+            <h3>Conclusión: Del Legado Médico Argentino a la Frontera Molecular</h3>
+            <p>
+                Así como los descubrimientos metabólicos de <strong>Bernardo Houssay</strong>, la revolución inmunológica de los anticuerpos de <strong>César Milstein</strong> y la democratización quirúrgica del <strong>Dr. René Favaloro</strong> transformaron la medicina del siglo XX, la ciencia contemporánea está ejecutando su propio "bypass", pero a escala informativa y genética.
+            </p>
+            <p>
+                El colapso en los costos de secuenciación y la aceleración de ensayos clínicos de edición génica demuestran que la frontera de la salud humana ya no se limita a la destreza física del cirujano o al tratamiento de síntomas tardíos, sino a nuestra capacidad para interpretar, reparar y reprogramar el código primordial de la vida.
+            </p>
+            <p>
+                Para la Argentina y el mundo, el verdadero desafío de las próximas décadas no será solo técnico, sino ético, social y estratégico: consolidar el desarrollo de la economía del conocimiento y garantizar que este salto evolutivo sea accesible de manera equitativa e inclusiva para toda la sociedad.
+            </p>
+        </div>
+
+        <!-- Botones de Acceso Rápido al Final -->
+        <div class="summary-btn-container reveal" style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+            <button class="btn-summary" onclick="toggleSummary(true)">📋 Ver Resumen Ejecutivo</button>
+            <button class="btn-summary" onclick="toggleGlossary(true)" style="border-color: #38bdf8; color: #38bdf8;">📖 Abrir Glosario Técnico</button>
+        </div>
+
+
+        <!-- 2. Footer Académico de Citación -->
+        <footer class="academic-footer reveal">
+            <h4>Fuentes Oficiales y Referencias Metodológicas:</h4>
+            <ul class="citation-list">
+                <li>• <strong>NHGRI / NIH (2026).</strong> <em>DNA Sequencing Costs Data</em>. National Human Genome Research Institute, U.S. Department of Health and Human Services.</li>
+                <li>• <strong>ClinicalTrials.gov (2026).</strong> <em>Global Registry of Gene Editing Clinical Trials (CRISPR/Cas9)</em>. U.S. National Library of Medicine.</li>
+                <li>• <strong>Nature Biotechnology (2026).</strong> <em>Investment Trends in Cellular Reprogramming and Longevity Biotech</em>. Market Analysis Report.</li>
+            </ul>
+        </footer>
+    </div>
+
+    <script>
+        // --- GRÁFICO 1: COSTO DEL GENOMA ---
+        const anosGenoma = ['2001', '2003', '2006', '2008', '2010', '2012', '2014', '2016', '2018', '2020', '2022', '2024', '2026'];
+        const costosUSD = [95263072, 50000000, 14000000, 1000000, 46774, 7666, 4008, 1245, 1100, 989, 525, 200, 100];
+
+        const ctxGenoma = document.getElementById('graficoGenoma').getContext('2d');
+        
+        new Chart(ctxGenoma, {
+            type: 'line',
+            data: {
+                labels: anosGenoma,
+                datasets: [{
+                    label: 'Costo por Genoma (USD)',
+                    data: costosUSD,
+                    borderColor: '#2dd4bf', // Verde agua
+                    backgroundColor: 'rgba(45, 212, 191, 0.12)',
+                    fill: true,
+                    tension: 0.3,
+                    pointBackgroundColor: '#2dd4bf',
+                    pointRadius: 5,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        type: 'logarithmic',
+                        grid: { color: '#1e293b' },
+                        ticks: {
+                            color: '#94a3b8',
+                            // Mostramos solo valores principales ordenados para evitar que se pisen
+                            callback: function(value) {
+                                if (value === 100 || value === 1000 || value === 10000 || value === 100000 || value === 1000000 || value === 100000000) {
+                                    return '$' + value.toLocaleString();
+                                }
+                                return null;
+                            }
+                        }
+                    },
+                    x: {
+                        grid: { color: '#1e293b' },
+                        ticks: { color: '#94a3b8' }
+                    }
+                },
+                plugins: {
+                    legend: { labels: { color: '#f8fafc' } },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return ' Costo: USD $' + context.raw.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // --- GRÁFICO 2: ENSAYOS CLÍNICOS CRISPR ---
+        const anosCrispr = ['2012', '2015', '2018', '2020', '2022', '2024', '2026'];
+        const ensayosCrispr = [0, 3, 31, 112, 245, 480, 750];
+
+        const ctxCrispr = document.getElementById('graficoCrispr').getContext('2d');
+
+        new Chart(ctxCrispr, {
+            type: 'bar', // Gráfico de barras para mostrar crecimiento exponencial
+            data: {
+                labels: anosCrispr,
+                datasets: [{
+                    label: 'Ensayos Clínicos Activos (CRISPR)',
+                    data: ensayosCrispr,
+                    backgroundColor: '#14b8a6', // Verde agua complementario
+                    borderRadius: 6,
+                    hoverBackgroundColor: '#2dd4bf'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        grid: { color: '#1e293b' },
+                        ticks: { color: '#94a3b8' }
+                    },
+                    x: {
+                        grid: { color: '#1e293b' },
+                        ticks: { color: '#94a3b8' }
+                    }
+                },
+                plugins: {
+                    legend: { labels: { color: '#f8fafc' } },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return ' Ensayos: ' + context.raw + ' proyectos activos';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        // --- GRÁFICO 3: INVERSIÓN EN LONGEVIDAD Y REPROGRAMACIÓN ---
+        const anosLongevidad = ['2016', '2018', '2020', '2022', '2024', '2026'];
+        const inversionMillones = [350, 820, 1500, 4200, 7800, 12500];
+
+        const ctxLongevidad = document.getElementById('graficoLongevidad').getContext('2d');
+
+        new Chart(ctxLongevidad, {
+            type: 'line',
+            data: {
+                labels: anosLongevidad,
+                datasets: [{
+                    label: 'Inversión Global (Millones de USD)',
+                    data: inversionMillones,
+                    borderColor: '#2dd4bf',
+                    backgroundColor: 'rgba(45, 212, 191, 0.15)',
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#2dd4bf',
+                    pointRadius: 6,
+                    pointHoverRadius: 9
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        grid: { color: '#1e293b' },
+                        ticks: {
+                            color: '#94a3b8',
+                            callback: function(value) {
+                                return '$' + value.toLocaleString() + ' M';
+                            }
+                        }
+                    },
+                    x: {
+                        grid: { color: '#1e293b' },
+                        ticks: { color: '#94a3b8' }
+                    }
+                },
+                plugins: {
+                    legend: { labels: { color: '#f8fafc' } },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return ' Inversión: USD $' + context.raw.toLocaleString() + ' Millones';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        // --- LÓGICA DEL COMPARADOR INTERACTIVO ---
+        function actualizarComparador() {
+            const selector = document.getElementById('selectAnno');
+            const valor = selector.value;
+
+            const costo = document.getElementById('compCosto');
+            const tiempo = document.getElementById('compTiempo');
+            const capacidad = document.getElementById('compCapacidad');
+
+            if (valor === '2001') {
+                costo.textContent = "USD $95.000.000";
+                costo.style.color = "#f87171"; // Rojo
+                tiempo.textContent = "13 Años";
+                capacidad.textContent = "Lectura Parcial";
+            } else if (valor === '2006') {
+                costo.textContent = "USD $14.000.000";
+                costo.style.color = "#fb923c"; // Naranja
+                tiempo.textContent = "~1 Año";
+                capacidad.textContent = "Nacimiento NGS";
+            } else if (valor === '2012') {
+                costo.textContent = "USD $7.666";
+                costo.style.color = "#fbbf24"; // Amarillo
+                tiempo.textContent = "2 Semanas";
+                capacidad.textContent = "Primeras Pruebas CRISPR";
+            } else if (valor === '2016') {
+                costo.textContent = "USD $1.245";
+                costo.style.color = "#a3e635"; // Verde claro
+                tiempo.textContent = "48 Horas";
+                capacidad.textContent = "Primeros Ensayos Ex Vivo";
+            } else if (valor === '2026') {
+                costo.textContent = "USD $100";
+                costo.style.color = "#2dd4bf"; // Verde menta
+                tiempo.textContent = "Pocas Horas";
+                capacidad.textContent = "Edición / Reversión";
+            }
+        }
+        // --- ANIMACIÓN DE APARICIÓN PROGRESIVA AL HACER SCROLL ---
+        document.addEventListener("DOMContentLoaded", function () {
+            const reveals = document.querySelectorAll(".reveal");
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add("active");
+                    }
+                });
+            }, {
+                threshold: 0.15 // Se activa cuando el 15% del elemento entra en pantalla
+            });
+
+            reveals.forEach((element) => observer.observe(element));
+        });
+        // --- LÓGICA DE TRANSICIÓN DE LA CARÁTULA ---
+        function ingresar() {
+            const overlay = document.getElementById('intro-overlay');
+            overlay.classList.add('hidden');
+            
+            // Permite disparar las animaciones de scroll inmediatamente al entrar
+            setTimeout(() => {
+                window.dispatchEvent(new Event('scroll'));
+            }, 300);
+        }
+        // --- 1. LÓGICA DE LA BARRA DE PROGRESO DE SCROLL ---
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById('progress-bar').style.width = scrolled + '%';
+        });
+
+        // --- 4. LÓGICA DEL MODAL DE RESUMEN EJECUTIVO ---
+        function toggleSummary(show) {
+            const modal = document.getElementById('summary-modal');
+            modal.style.display = show ? 'flex' : 'none';
+        }
+        // --- GRÁFICO 2B: DISTRIBUCIÓN DE PATOLOGÍAS CRISPR (DOUGHNUT) ---
+const ctxDiseases = document.getElementById('crisprDiseasesChart').getContext('2d');
+new Chart(ctxDiseases, {
+    type: 'doughnut',
+    data: {
+        labels: ['Oncología (Cáncer)', 'Enfermedades Genéticas Raras', 'Enfermedades Cardiovasculares', 'Infecciosas / Inmunología', 'Otras Patologías'],
+        datasets: [{
+            data: [42, 31, 14, 8, 5],
+            backgroundColor: [
+                '#2dd4bf', // Menta
+                '#14b8a6', // Teal
+                '#38bdf8', // Azul cielo
+                '#f59e0b', // Ámbar
+                '#64748b'  // Gris Slate
+            ],
+            borderWidth: 2,
+            borderColor: '#0b0f19'
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: { color: '#94a3b8', font: { size: 12 } }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return ` ${context.label}: ${context.raw}% de ensayos`;
+                    }
+                }
+            }
+        }
+    }
+});
+    // --- LÓGICA DEL MÓDULO GEOPOLÍTICO GLOBAL ---
+    function actualizarRegionGlobal() {
+        const region = document.getElementById('selectRegion').value;
+        const biobancos = document.getElementById('regBiobancos');
+        const costo = document.getElementById('regCosto');
+        const desafio = document.getElementById('regDesafio');
+
+        if (region === 'latam') {
+        biobancos.textContent = "7% del Total Global";
+        costo.textContent = "Acceso Desigual / Pagaré Privado";
+        desafio.textContent = "Inclusión de Variabilidad Genética Local";
+        desafio.style.color = "#38bdf8";
+        } else if (region === 'namerica') {
+        biobancos.textContent = "48% del Total Global";
+        costo.textContent = "USD $100 - $300";
+        desafio.textContent = "Líder en Ensayos Clínicos Avanzados";
+        desafio.style.color = "#2dd4bf";
+        } else if (region === 'europe') {
+        biobancos.textContent = "28% del Total Global";
+        costo.textContent = "Integrado en Sistemas Públicos";
+        desafio.textContent = "Marcos Bioéticos y de Regulación de Datos";
+        desafio.style.color = "#a3e635";
+        } else if (region === 'asia') {
+        biobancos.textContent = "15% del Total Global";
+        costo.textContent = "Subvención Estatal Masiva";
+        desafio.textContent = "Rápida Expansión en Reprogramación";
+        desafio.style.color = "#fbbf24";
+        } else if (region === 'africa') {
+        biobancos.textContent = "< 2% del Total Global";
+        costo.textContent = "Limitado / En Desarrollo";
+        desafio.textContent = "Diversidad Genómica Ancestral y Soberanía de Datos";
+        desafio.style.color = "#f87171"; // Rojo de atención institucional
+        } else if (region === 'oceania') {
+        biobancos.textContent = "4% del Total Global";
+        costo.textContent = "Altamente Subsidiado (ANZ)";
+        desafio.textContent = "Medicina Genómica Poblacional Indígena";
+        desafio.style.color = "#c084fc"; // Violeta distintivo
+        }
+    }
+     function toggleGlossary(show) {
+            const modal = document.getElementById('glossary-modal');
+            modal.style.display = show ? 'flex' : 'none';
+        }
+
+    </script>
+<!-- Modal de Resumen Ejecutivo -->
+    <div id="summary-modal">
+        <div class="summary-content">
+            <span class="close-summary" onclick="toggleSummary(false)">&times;</span>
+            <h3 style="color: #2dd4bf; margin-top: 0;">Resumen Ejecutivo / Síntesis del Proyecto</h3>
+            <p style="color: #cbd5e1; font-size: 0.95rem; line-height: 1.6;">
+                <strong>1. Transición Histórica y Legado Nacional:</strong> Del pilar metabólico, inmunológico y quirúrgico de referentes como Bernardo Houssay, César Milstein y René Favaloro (reparación y comprensión física del cuerpo) hacia la reprogramación genética e informativa del siglo XXI.<br><br>
+                <strong>2. Democratización del Dato Genómico:</strong> Caída exponencial del costo por genoma (de $95M a $100 USD en 25 años) y aceleración de ensayos clínicos CRISPR, habilitando una medicina preventiva de precisión.<br><br>
+                <strong>3. Agenda de Desarrollo e Impacto Nacional:</strong> Oportunidad estratégica para la República Argentina en la reducción de costos de salud pública, el impulso de la economía del conocimiento y el debate ético sobre el acceso equitativo a terapias avanzadas.
+            </p>
+        </div>
+    </div>
+    <!-- Modal de Glosario Técnico -->
+    <div id="glossary-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(11, 15, 25, 0.85); backdrop-filter: blur(8px); z-index: 10001; justify-content: center; align-items: center;">
+        <div class="summary-content" style="max-height: 80vh; overflow-y: auto;">
+            <span class="close-summary" onclick="toggleGlossary(false)">&times;</span>
+            <h3 style="color: #38bdf8; margin-top: 0;">Glosario Técnico de Términos</h3>
+            <div style="color: #cbd5e1; font-size: 0.9rem; line-height: 1.6; text-align: left;">
+                <p><strong>• CRISPR-Cas9:</strong> Tecnología de edición genética que actúa como "tijeras moleculares", permitiendo cortar, corregir o modificar secuencias específicas del ADN humano.</p>
+                <hr style="border: 0; border-top: 1px solid #1e293b; margin: 10px 0;">
+                <p><strong>• NGS (Secuenciación de Nueva Generación):</strong> Tecnología masiva en paralelo que permitió reducir drásticamente el costo y tiempo de lectura del genoma completo.</p>
+                <hr style="border: 0; border-top: 1px solid #1e293b; margin: 10px 0;">
+                <p><strong>• Anticuerpos Monoclonales:</strong> Proteínas producidas en laboratorio diseñadas para unirse a dianas celulares específicas, fundamentales en inmunoterapia y oncología (legado de César Milstein).</p>
+                <hr style="border: 0; border-top: 1px solid #1e293b; margin: 10px 0;">
+                <p><strong>• Factores de Yamanaka:</strong> Grupo de cuatro factores de transcripción capaces de reprogramar células adultas diferenciadas para devolverlas a un estado embrionario pluripotente.</p>
+                <hr style="border: 0; border-top: 1px solid #1e293b; margin: 10px 0;">
+                <p><strong>• Biobanco:</strong> Colección organizada de muestras biológicas humanas y datos genómicos asociados, vital para la investigación clínica global.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
